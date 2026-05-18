@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.USER,
+    pass: process.env.PASSWORD,
   },
 });
 
@@ -40,7 +40,7 @@ export const startSendOtpConsumer = async () => {
         const { to, subject, body } = JSON.parse(msg.content.toString());
 
         const info = await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+          from: process.env.USER,
           to,
           subject,
           text: body,
