@@ -1,18 +1,10 @@
 import amqp from "amqplib";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 
 dotenv.config({});
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const startSendOtpConsumer = async () => {
   try {
@@ -39,14 +31,14 @@ export const startSendOtpConsumer = async () => {
       try {
         const { to, subject, body } = JSON.parse(msg.content.toString());
 
-        const info = await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+        const info = await resend.emails.send({
+          from: "onboarding@resend.dev",
           to,
           subject,
-          text: body,
+          html: `<h1>${body}</h1>`,
         });
 
-        console.log("📩 MAIL SENT:", info.response);
+        console.log("📩 MAIL SENT:", info);
 
         channel.ack(msg);
       } catch (error: any) {
